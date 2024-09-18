@@ -2,7 +2,7 @@
 
 NAME = "alpine-army-knife"
 
-VERSION="v1.0.0"
+VERSION="v1.0.1"
 
 ARTIFACTORY="alessandroren"
 
@@ -15,7 +15,9 @@ clean:
 # Local Docker build / push
 build:
 	DOCKER_BUILDKIT=1
-	docker build --no-cache . --platform linux/amd64 -t ${NAME}/${NAME}:${VERSION}
+	#docker buildx create --name multi-arch --platform "linux/arm64,linux/amd64,linux/arm/v7" --driver "docker-container"
+	DOCKER_BUILDKIT=1 docker buildx use multi-arch
+	DOCKER_BUILDKIT=1 docker buildx build . --platform linux/amd64,linux/arm64 -t ${ARTIFACTORY}/${NAME}:${VERSION} -t ${ARTIFACTORY}/${NAME}:latest --push
 
 push: #build
 	docker tag ${NAME}/${NAME}:${VERSION} ${ARTIFACTORY}/${NAME}:${VERSION}
